@@ -10,7 +10,7 @@ class ToDoManagement(models.Model):
     description = fields.Char(string='Description')
     due_date = fields.Date(string='Due Date', default=fields.Date.today())
     is_late = fields.Boolean()
-    estimated_time = fields.Date()
+    estimated_time = fields.Float()
     active = fields.Boolean(default=True)
     status = fields.Selection([
         ('new', 'New'),

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    <record id="action_report_todo_management" model="ir.actions.report">
+        <field name="name">Task Report</field>
+        <field name="model">todo_management</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">todo_management.report_todo_management</field>
+        <field name="report_file">todo_management.report_todo_management</field>
+        <field name="binding_model_id" ref="model_todo_management"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_todo_management">   
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="page" style="font-family: Arial, sans-serif; color: #222;">
+                        <!-- Header: logo and contact details from the active company -->
+                        <div style="background-color: #e8e8e8; border: 1px solid #6285bd; padding: 12px 16px; min-height: 85px;">
+                            <div style="display: inline-block; vertical-align: middle; width: 28%; border: 1px solid #344b68; background: white; padding: 8px;">
+                                <img t-if="res_company.logo"
+                                     t-att-src="image_data_uri(res_company.logo)"
+                                     style="max-width: 150px; max-height: 48px; display: block; margin-bottom: 4px;"/>
+                                <strong t-esc="res_company.name"/><br/>
+                                <span t-esc="res_company.partner_id.contact_address"/><br/>
+                                <span t-if="res_company.phone" t-esc="res_company.phone"/>
+                            </div>
+                        </div>
+
+                        <!-- Main task details -->
+                        <div style="border: 1px solid #344b68; margin: 16px 14px; padding: 22px 28px;">
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 18px;">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 150px; padding: 3px;"><strong>TASK:</strong></td>
+                                        <td style="padding: 3px;"><span t-field="o.task_name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 3px;"><strong>Due Date:</strong></td>
+                                        <td style="padding: 3px;"><span t-field="o.due_date"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 3px;"><strong>Assign To:</strong></td>
+                                        <td style="padding: 3px;"><span t-field="o.assign_to_id"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 3px;"><strong>Estimated Time:</strong></td>
+                                        <td style="padding: 3px;"><span t-field="o.estimated_time"/> H</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div style="margin: 18px 0 10px;">
+                                <strong style="font-size: 16px;">Description:</strong><br/>
+                                <span t-field="o.description"/>
+                            </div>
+
+                            <t t-set="total_time" t-value="sum(o.task_line_ids.mapped('time'))"/>
+                            <table style="width: 92%; margin: 18px auto 0; border-collapse: collapse; text-align: center;">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4" style="border: 1px solid #6285bd; padding: 7px; font-size: 16px;">Timesheet</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="border: 1px solid #6285bd; padding: 6px; width: 7%;">#</th>
+                                        <th style="border: 1px solid #6285bd; padding: 6px; width: 20%;">Date</th>
+                                        <th style="border: 1px solid #6285bd; padding: 6px;">Description</th>
+                                        <th style="border: 1px solid #6285bd; padding: 6px; width: 22%;">Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="o.task_line_ids" t-as="line">
+                                        <td style="border: 1px solid #6285bd; padding: 6px;"><span t-esc="line_index + 1"/></td>
+                                        <td style="border: 1px solid #6285bd; padding: 6px;"><span t-field="line.date"/></td>
+                                        <td style="border: 1px solid #6285bd; padding: 6px; text-align: left;"><span t-field="line.description"/></td>
+                                        <td style="border: 1px solid #6285bd; padding: 6px;"><span t-field="line.time"/> H</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="border: 1px solid #6285bd; padding: 7px; text-align: right; font-weight: bold;">Total Time</td>
+                                        <td style="border: 1px solid #6285bd; padding: 7px; font-weight: bold;"><span t-esc="total_time"/> H</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Footer company details and PDF page numbering -->
+                        <div style="background-color: #e8e8e8; border: 1px solid #6285bd; padding: 12px; text-align: center; margin-top: 18px;">
+                            <span t-esc="res_company.email"/>
+                            <t t-if="res_company.phone"> | <span t-esc="res_company.phone"/></t>
+                            <t t-if="res_company.vat"> | <span t-esc="res_company.vat"/></t>
+                        </div>
+                        <div style="text-align: right; margin: 6px 10px;">
+                            Page <span class="page"/> / <span class="topage"/>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    </data>
+</odoo>
+
+
